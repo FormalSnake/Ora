@@ -85,6 +85,7 @@ struct OraRoot: View {
             .environmentObject(historyManager)
             .environmentObject(mediaController)
             .environmentObject(keyModifierListener)
+            .environmentObject(CustomKeyboardShortcutManager.shared)
             .environmentObject(appearanceManager)
             .environmentObject(downloadManager)
             .environmentObject(updateService)
@@ -176,6 +177,12 @@ struct OraRoot: View {
                 NotificationCenter.default.addObserver(forName: .checkForUpdates, object: nil, queue: .main) { note in
                     guard note.object as? NSWindow === window ?? NSApp.keyWindow else { return }
                     updateService.checkForUpdates()
+                }
+                NotificationCenter.default.addObserver(forName: .selectTabAtIndex, object: nil, queue: .main) { note in
+                    guard note.object as? NSWindow === window ?? NSApp.keyWindow else { return }
+                    if let index = note.userInfo?["index"] as? Int {
+                        tabManager.selectTabAtIndex(index)
+                    }
                 }
             }
     }
